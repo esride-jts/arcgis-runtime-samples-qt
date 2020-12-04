@@ -1,0 +1,44 @@
+{
+    "category": "Maps",
+    "dataItems": [
+        {
+            "itemId": "740b663bff5e4198b9b6674af93f638a",
+            "path": "~/ArcGIS/Runtime/Data/mmpk/canyonlands/package.info"
+        }
+    ],
+    "description": "Apply scheduled updates to a downloaded preplanned map area.",
+    "ignore": false,
+    "images": [
+        "screenshot.png"
+    ],
+    "keywords": [
+        "offline",
+        "pre-planned",
+        "preplanned",
+        "synchronize",
+        "update",
+        "MobileMapPackage",
+        "OfflineMapSyncJob",
+        "OfflineMapSyncParameters",
+        "OfflineMapSyncResult",
+        "OfflineMapSyncTask",
+        "OfflineMapUpdatesInfo"
+    ],
+    "redirect_from": [
+        ""
+    ],
+    "relevant_apis": [
+        "MobileMapPackage",
+        "OfflineMapSyncJob",
+        "OfflineMapSyncParameters",
+        "OfflineMapSyncResult",
+        "OfflineMapSyncTask",
+        "OfflineMapUpdatesInfo"
+    ],
+    "snippets": [
+        "ApplyScheduledMapUpdates.qml",
+        "ApplyScheduledMapUpdates.cpp",
+        "ApplyScheduledMapUpdates.h"
+    ],
+    "title": "Apply scheduled updates to preplanned map area"
+}

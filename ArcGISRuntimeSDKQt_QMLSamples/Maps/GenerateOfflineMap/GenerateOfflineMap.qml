@@ -17,19 +17,18 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import Esri.ArcGISRuntime 100.5
+import Esri.ArcGISRuntime 100.9
 import Esri.ArcGISExtras 1.1
-import Esri.ArcGISRuntime.Toolkit.Dialogs 100.5
+import Esri.ArcGISRuntime.Toolkit.Dialogs 100.9
 
 Rectangle {
     id: rootRectangle
     clip: true
     width: 800
     height: 600
-
     
-    property url outputMapPackage: System.temporaryFolder.url + "/OfflineMap_%1.mmpk".arg(new Date().getTime().toString())
-    property string webMapId: "acc027394bc84c2fb04d1ed317aac674"
+    readonly property url outputMapPackage: System.temporaryFolder.url + "/OfflineMap_%1.mmpk".arg(new Date().getTime().toString())
+    readonly property string webMapId: "acc027394bc84c2fb04d1ed317aac674"
 
     MapView {
         id: mapView
@@ -67,8 +66,8 @@ Rectangle {
     Rectangle {
         id: extentRectangle
         anchors.centerIn: parent
-        width: parent.width - (50)
-        height: parent.height - (125)
+        width: parent.width - 50
+        height: parent.height - 125
         color: "transparent"
         visible: map.loadStatus === Enums.LoadStatusLoaded
         border {
@@ -77,11 +76,11 @@ Rectangle {
         }
 
         function getRectangleEnvelope() {
-            var corner1 = mapView.screenToLocation(extentRectangle.x, extentRectangle.y);
-            var corner2 = mapView.screenToLocation((extentRectangle.x + extentRectangle.width), (extentRectangle.y + extentRectangle.height));
-            var envBuilder = ArcGISRuntimeEnvironment.createObject("EnvelopeBuilder");
+            const corner1 = mapView.screenToLocation(extentRectangle.x, extentRectangle.y);
+            const corner2 = mapView.screenToLocation((extentRectangle.x + extentRectangle.width), (extentRectangle.y + extentRectangle.height));
+            const envBuilder = ArcGISRuntimeEnvironment.createObject("EnvelopeBuilder");
             envBuilder.setCorners(corner1, corner2);
-            var mapExtent = GeometryEngine.project(envBuilder.geometry, SpatialReference.createWebMercator());
+            const mapExtent = GeometryEngine.project(envBuilder.geometry, Factory.SpatialReference.createWebMercator());
             offlineMapTask.createDefaultGenerateOfflineMapParameters(mapExtent);
         }
     }
@@ -144,10 +143,10 @@ Rectangle {
             case Enums.JobStatusSucceeded:
                 // show any layer errors
                 if (generateJob.result.hasErrors) {
-                    var layerErrors = generateJob.result.layerErrors;
-                    var errorText = "";
-                    for (var i = 0; i < layerErrors.length; i++) {
-                        var errorPair = layerErrors[i];
+                    const layerErrors = generateJob.result.layerErrors;
+                    let errorText = "";
+                    for (let i = 0; i < layerErrors.length; i++) {
+                        const errorPair = layerErrors[i];
                         errorText += errorPair.layer.name + ": " + errorPair.error.message + "\n";
                     }
                     msgDialog.detailedText = errorText;

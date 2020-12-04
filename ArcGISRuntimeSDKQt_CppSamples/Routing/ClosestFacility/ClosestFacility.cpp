@@ -1,4 +1,4 @@
-// [WriteFile Name=ClosestFacility, Category=Routing]
+// [WriteFile Name=FindClosestFacilityToAnIncidentInteractive, Category=Routing]
 // [Legal]
 // Copyright 2017 Esri.
 
@@ -13,6 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // [Legal]
+
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
 
 #include "ClosestFacility.h"
 

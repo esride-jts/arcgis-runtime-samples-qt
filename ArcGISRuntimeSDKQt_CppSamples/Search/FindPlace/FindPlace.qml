@@ -16,12 +16,8 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-import QtQuick 2.6
-import QtQuick.Controls 2.2
-import QtQuick.Window 2.2
 import QtPositioning 5.6
-import Esri.ArcGISExtras 1.1
-import Esri.ArcGISRuntime.Toolkit.Controls 100.5
+import Esri.ArcGISRuntime.Toolkit.Controls 100.9
 import Esri.Samples 1.0
 
 FindPlaceSample {
@@ -29,7 +25,6 @@ FindPlaceSample {
     clip: true
     width: 800
     height: 600
-
     
     property bool isSearchingLocation: false
     property bool searchByExtent: false
@@ -41,6 +36,7 @@ FindPlaceSample {
 
     // add a mapView component
     MapView {
+        id: mapView
         anchors.fill: parent
         objectName: "mapView"
 
@@ -48,13 +44,22 @@ FindPlaceSample {
         Callout {
             id: callout
             leaderPosition: leaderPositionEnum.Automatic
-            calloutData: findPlaceSample.calloutData
+            calloutData: mapView.calloutData
             accessoryButtonHidden: true
             screenOffsetY: -19
         }
     }
 
+    Rectangle {
+        anchors {
+            fill: searchColumn
+            margins: -5
+        }
+        color: "white"
+    }
+
     Column {
+        id: searchColumn
         anchors {
             left: parent.left
             right: parent.right

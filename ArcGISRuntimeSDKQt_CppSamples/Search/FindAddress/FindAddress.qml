@@ -17,19 +17,17 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import QtQuick.Window 2.2
 import Esri.Samples 1.0
-import Esri.ArcGISRuntime.Toolkit.Controls 100.5
+import Esri.ArcGISRuntime.Toolkit.Controls 100.9
 
 FindAddressSample {
     id: findAddressSample
     width: 800
     height: 600
 
-    
-
     // add a mapView component
     MapView {
+        id: mapView
         anchors.fill: parent
         objectName: "mapView"
 
@@ -37,7 +35,7 @@ FindAddressSample {
             id: callout
             borderColor: "lightgrey"
             borderWidth: 1
-            calloutData: findAddressSample.calloutData
+            calloutData: mapView.calloutData
             maxWidth: findAddressSample.width * 0.75
             leaderPosition: leaderPositionEnum.Automatic
             accessoryButtonHidden: true
@@ -77,6 +75,7 @@ FindAddressSample {
                     id: textField
                     font.pixelSize: 14
                     placeholderText: "Type in an address"
+                    selectByMouse: true
 
                     Keys.onEnterPressed: geocodeAddress();
                     Keys.onReturnPressed: geocodeAddress();

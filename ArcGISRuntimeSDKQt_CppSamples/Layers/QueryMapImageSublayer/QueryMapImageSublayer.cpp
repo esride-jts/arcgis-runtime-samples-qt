@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "QueryMapImageSublayer.h"
 
 #include "Basemap.h"
@@ -130,7 +134,7 @@ void QueryMapImageSublayer::createSymbols()
   m_countySymbol = new SimpleFillSymbol(SimpleFillSymbolStyle::DiagonalCross, QColor("cyan"), countyOutline, this);
 
   // create symbol for state selection
-  SimpleLineSymbol* stateOutline = new SimpleLineSymbol(SimpleLineSymbolStyle::Dash, QColor("darkcyan"), 6.0f /*width*/, this);
+  SimpleLineSymbol* stateOutline = new SimpleLineSymbol(SimpleLineSymbolStyle::Solid, QColor("darkcyan"), 6.0f /*width*/, this);
   m_stateSymbol = new SimpleFillSymbol(SimpleFillSymbolStyle::Null, QColor("transparent"), stateOutline, this);
 }
 

@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "OfflineGeocode.h"
 
 #include "Map.h"
@@ -30,13 +34,41 @@
 #include "PictureMarkerSymbol.h"
 #include "IdentifyGraphicsOverlayResult.h"
 
-#include <QQmlProperty>
 #include <QScopedPointer>
+#include <QDir>
+#include <QtCore/qglobal.h>
+#include <memory>
+
+#ifdef Q_OS_IOS
+#include <QStandardPaths>
+#endif // Q_OS_IOS
+
+using namespace Esri::ArcGISRuntime;
+
+// helper method to get cross platform data path
+namespace
+{
+  QString defaultDataPath()
+  {
+    QString dataPath;
+
+  #ifdef Q_OS_ANDROID
+    dataPath = "/sdcard";
+  #elif defined Q_OS_IOS
+    dataPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+  #else
+    dataPath = QDir::homePath();
+  #endif
+
+    return dataPath;
+  }
+} // namespace
 
 using namespace Esri::ArcGISRuntime;
 
 OfflineGeocode::OfflineGeocode(QQuickItem* parent):
-  QQuickItem(parent)
+  QQuickItem(parent),
+  m_dataPath(defaultDataPath() + "/ArcGIS/Runtime/Data/")
 {
 }
 
@@ -57,8 +89,6 @@ void OfflineGeocode::componentComplete()
   // find QML MapView component
   m_mapView = findChild<MapQuickView*>("mapView");
   m_mapView->setWrapAroundMode(WrapAroundMode::Disabled);
-
-  m_dataPath = QQmlProperty::read(this, "dataPath").toString();
 
   // create a tiled layer using a local .tpk file
   TileCache* tileCache = new TileCache(m_dataPath + "tpk/streetmap_SD.tpk", this);
@@ -106,7 +136,6 @@ void OfflineGeocode::componentComplete()
   m_mapView->calloutData()->setVisible(false);
   m_mapView->calloutData()->setTitle("Address");
   m_calloutData = m_mapView->calloutData();
-  emit calloutDataChanged();
 
   connectSignals();
 }
@@ -129,11 +158,6 @@ void OfflineGeocode::setSuggestionsText(const QString& searchText)
 void OfflineGeocode::logError(const Error error)
 {
   setErrorMessage( QString("%1: %2").arg(error.message(), error.additionalMessage()));
-}
-
-CalloutData* OfflineGeocode::calloutData() const
-{
-  return m_calloutData;
 }
 
 SuggestListModel* OfflineGeocode::suggestions() const
@@ -217,7 +241,7 @@ void OfflineGeocode::connectSignals()
   connect(m_mapView, &MapQuickView::identifyGraphicsOverlayCompleted, this, [this](QUuid, IdentifyGraphicsOverlayResult* rawIdentifyResult)
   {
     // Delete rawIdentifyResult when we leave scope.
-    QScopedPointer<IdentifyGraphicsOverlayResult> identifyResult(rawIdentifyResult);
+    auto identifyResult = std::unique_ptr<IdentifyGraphicsOverlayResult>(rawIdentifyResult);
     
     if (!identifyResult)
       return;

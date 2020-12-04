@@ -17,30 +17,25 @@
 import QtQuick 2.6
 import Esri.Samples 1.0
 import QtQuick.Controls 2.2
-import QtQuick.Window 2.2
 import QtQuick.Layouts 1.3
-import Esri.ArcGISExtras 1.1
-import Esri.ArcGISRuntime.Toolkit.Controls 100.5
+import Esri.ArcGISRuntime.Toolkit.Controls 100.9
 
 OfflineGeocodeSample {
     id: offlineGeocodeSample
     clip: true
-
     width: 800
-    height: 600
-
-    
-    property string dataPath: System.resolvedPath(System.userHomePath) + "/ArcGIS/Runtime/Data/"
+    height: 600    
 
     // add a mapView component
     MapView {
+        id: mapView
         anchors.fill: parent
         objectName: "mapView"
 
         Callout {
             id: callout
             leaderPosition: leaderPositionEnum.Automatic
-            calloutData: offlineGeocodeSample.calloutData
+            calloutData: mapView.calloutData
             screenOffsetY: -19
             accessoryButtonHidden: true
         }
@@ -77,6 +72,7 @@ OfflineGeocodeSample {
                     id: textField
                     Layout.fillWidth: true
                     leftPadding: 5
+                    selectByMouse: true
 
                     placeholderText: "Enter an Address"
 

@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "OpenMobileScenePackage.h"
 
 #include "Error.h"
@@ -22,7 +26,6 @@
 #include "SceneQuickView.h"
 
 #include <QDir>
-#include <QTemporaryDir>
 #include <QtCore/qglobal.h>
 
 #ifdef Q_OS_IOS
@@ -32,7 +35,8 @@
 using namespace Esri::ArcGISRuntime;
 
 // helper method to get cross platform data path
-namespace {
+namespace
+{
   QString defaultDataPath()
   {
     QString dataPath;
@@ -52,44 +56,10 @@ namespace {
 OpenMobileScenePackage::OpenMobileScenePackage(QObject* parent /* = nullptr */):
   QObject(parent)
 {  
-
   // create the MSPK data path
   // data is downloaded automatically by the sample viewer app. Instructions to download
   // separately are specified in the readme.
   const QString dataPath = defaultDataPath() + "/ArcGIS/Runtime/Data/mspk/philadelphia.mspk";
-
-  // connect to the Mobile Scene Package instance to determine if direct read is supported. Packages
-  // that contain raster data cannot be read directly and must be unpacked first.
-  connect(MobileScenePackage::instance(), &MobileScenePackage::isDirectReadSupportedCompleted,
-          this, [this, dataPath](QUuid, bool supported)
-  {
-    // if direct read is supported, load the package
-    if (supported)
-    {
-      createScenePackage(dataPath);
-    }
-    // otherwise, the package needs to be unpacked
-    else
-    {
-      MobileScenePackage::unpack(dataPath, m_unpackTempDir.path());
-    }
-  });
-
-  // connect to the Mobile Scene Package instance to know when the data is unpacked
-  connect(MobileScenePackage::instance(), &MobileScenePackage::unpackCompleted,
-          this, [this](QUuid, bool success)
-  {
-    // if the unpack was successful, load the unpacked package
-    if (success)
-    {
-      createScenePackage(m_unpackTempDir.path());
-    }
-    // log that the upack failed
-    else
-    {
-      qDebug() << "failed to unpack";
-    }
-  });
 
   // connect to the Mobile Scene Package instance to know when errors occur
   connect(MobileScenePackage::instance(), &MobileScenePackage::errorOccurred,
@@ -101,8 +71,8 @@ OpenMobileScenePackage::OpenMobileScenePackage(QObject* parent /* = nullptr */):
     qDebug() << QString("Error: %1 %2").arg(e.message(), e.additionalMessage());
   });
 
-  // Check if the MSPK can be read directly
-  MobileScenePackage::isDirectReadSupported(dataPath);
+  // Create the Scene Package
+  createScenePackage(dataPath);
 }
 
 OpenMobileScenePackage::~OpenMobileScenePackage() = default;

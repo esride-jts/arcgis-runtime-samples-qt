@@ -1,0 +1,30 @@
+{
+    "category": "Cloud and portal",
+    "description": "Uses Windows credentials to access services hosted on a portal secured with Integrated Windows Authentication (IWA).",
+    "ignore": false,
+    "images": [
+        "screenshot.png"
+    ],
+    "keywords": [
+        "Windows",
+        "authentication",
+        "security",
+        "AuthenticationManager",
+        "Credential",
+        "Portal"
+    ],
+    "redirect_from": [
+        ""
+    ],
+    "relevant_apis": [
+        "AuthenticationManager",
+        "Credential",
+        "Portal"
+    ],
+    "snippets": [
+        "IntegratedWindowsAuthentication.qml",
+        "IntegratedWindowsAuthentication.cpp",
+        "IntegratedWindowsAuthentication.h"
+    ],
+    "title": "Integrated windows authentication"
+}

@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "RasterFunctionService.h"
 
 #include "Map.h"
@@ -23,9 +27,33 @@
 #include "ImageServiceRaster.h"
 #include "RasterFunction.h"
 
-#include <QQmlProperty>
+#include <QDir>
+#include <QtCore/qglobal.h>
+
+#ifdef Q_OS_IOS
+#include <QStandardPaths>
+#endif // Q_OS_IOS
 
 using namespace Esri::ArcGISRuntime;
+
+// helper method to get cross platform data path
+namespace
+{
+  QString defaultDataPath()
+  {
+    QString dataPath;
+
+  #ifdef Q_OS_ANDROID
+    dataPath = "/sdcard";
+  #elif defined Q_OS_IOS
+    dataPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+  #else
+    dataPath = QDir::homePath();
+  #endif
+
+    return dataPath;
+  }
+} // namespace
 
 RasterFunctionService::RasterFunctionService(QQuickItem* parent /* = nullptr */):
   QQuickItem(parent)
@@ -43,7 +71,7 @@ void RasterFunctionService::componentComplete()
 {
   QQuickItem::componentComplete();
 
-  m_dataPath = QUrl(QQmlProperty::read(this, "dataPath").toString()).toLocalFile();
+  m_dataPath = defaultDataPath() + "/ArcGIS/Runtime/Data/raster";
 
   // find QML MapView component
   m_mapView = findChild<MapQuickView*>("mapView");

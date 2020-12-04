@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "EditAndSyncFeatures.h"
 
 #include "Map.h"
@@ -31,13 +35,39 @@
 #include "GeometryEngine.h"
 #include "Geodatabase.h"
 #include "Point.h"
-#include <QQmlProperty>
+
 #include <QUrl>
+#include <QDir>
+#include <QtCore/qglobal.h>
+
+#ifdef Q_OS_IOS
+#include <QStandardPaths>
+#endif // Q_OS_IOS
 
 using namespace Esri::ArcGISRuntime;
 
+// helper method to get cross platform data path
+namespace
+{
+  QString defaultDataPath()
+  {
+    QString dataPath;
+
+  #ifdef Q_OS_ANDROID
+    dataPath = "/sdcard";
+  #elif defined Q_OS_IOS
+    dataPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+  #else
+    dataPath = QDir::homePath();
+  #endif
+
+    return dataPath;
+  }
+} // namespace
+
 EditAndSyncFeatures::EditAndSyncFeatures(QQuickItem* parent /* = nullptr */):
-  QQuickItem(parent)
+  QQuickItem(parent),
+  m_dataPath(defaultDataPath() + "/ArcGIS/Runtime/Data/")
 {
 }
 
@@ -62,7 +92,6 @@ void EditAndSyncFeatures::componentComplete()
   m_mapView->setWrapAroundMode(WrapAroundMode::Disabled);
 
   // Create a map using a local tile package
-  m_dataPath = QQmlProperty::read(this, "dataPath").toUrl().toLocalFile();
   TileCache* tileCache = new TileCache(m_dataPath + "tpk/SanFrancisco.tpk", this);
   ArcGISTiledLayer* tiledLayer = new ArcGISTiledLayer(tileCache, this);
   Basemap* basemap = new Basemap(tiledLayer, this);
@@ -191,7 +220,7 @@ void EditAndSyncFeatures::generateGeodatabaseFromCorners(double xCorner1, double
   GenerateGeodatabaseParameters params = getGenerateParameters(geodatabaseExtent);
 
   // execute the task and obtain the job
-  QString outputGdb = QQmlProperty::read(this, "outputGdb").toString();
+  const QString outputGdb = m_temporaryDir.path() + "/Wildfire.geodatabase";
   GenerateGeodatabaseJob* generateJob = m_syncTask->generateGeodatabase(params, outputGdb);
 
   // connect to the job's status changed signal

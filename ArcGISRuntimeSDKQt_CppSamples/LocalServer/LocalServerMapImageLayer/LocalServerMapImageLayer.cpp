@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "LocalServerMapImageLayer.h"
 
 #include "Basemap.h"
@@ -77,6 +81,7 @@ void LocalServerMapImageLayer::connectSignals()
   {
     if (LocalServer::status() == LocalServerStatus::Started)
     {
+      // start the service
       m_localMapService->start();
     }
   });

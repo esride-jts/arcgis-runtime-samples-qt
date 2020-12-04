@@ -1,0 +1,41 @@
+{
+    "category": "Layers",
+    "description": "Browse a WFS service for layers and add them to the map.",
+    "ignore": false,
+    "images": [
+        "screenshot.png"
+    ],
+    "keywords": [
+        "OGC",
+        "WFS",
+        "browse",
+        "catalog",
+        "feature",
+        "layers",
+        "service",
+        "web",
+        "FeatureLayer",
+        "WfsFeatureTable",
+        "WfsFeatureTable::axisOrder",
+        "WfsLayerInfo",
+        "WfsService",
+        "WfsServiceInfo"
+    ],
+    "redirect_from": [
+        ""
+    ],
+    "relevant_apis": [
+        "FeatureLayer",
+        "WfsFeatureTable",
+        "WfsFeatureTable::axisOrder",
+        "WfsLayerInfo",
+        "WfsService",
+        "WfsServiceInfo"
+    ],
+    "snippets": [
+        "BrowseWfsLayers.qml",
+        "BrowseWfsLayers.cpp",
+        "BrowseWfsLayers.h"
+    ],
+    "title": "Browse WFS layers"
+}

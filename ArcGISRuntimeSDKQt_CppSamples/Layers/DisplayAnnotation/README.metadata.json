@@ -1,0 +1,34 @@
+{
+    "category": "Layers",
+    "description": "Display annotation from a feature service URL.",
+    "ignore": false,
+    "images": [
+        "screenshot.png"
+    ],
+    "keywords": [
+        "annotation",
+        "cartography",
+        "labels",
+        "placement",
+        "reference scale",
+        "text",
+        "utility",
+        "AnnotationLayer",
+        "FeatureLayer",
+        "ServiceFeatureTable"
+    ],
+    "redirect_from": [
+        ""
+    ],
+    "relevant_apis": [
+        "AnnotationLayer",
+        "FeatureLayer",
+        "ServiceFeatureTable"
+    ],
+    "snippets": [
+        "DisplayAnnotation.qml",
+        "DisplayAnnotation.cpp",
+        "DisplayAnnotation.h"
+    ],
+    "title": "Display annotation"
+}

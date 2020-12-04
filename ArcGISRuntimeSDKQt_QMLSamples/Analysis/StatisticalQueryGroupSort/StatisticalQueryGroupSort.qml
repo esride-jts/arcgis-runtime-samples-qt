@@ -16,7 +16,7 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-import Esri.ArcGISRuntime 100.5
+import Esri.ArcGISRuntime 100.9
 
 Rectangle {
     id: rootRectangle
@@ -28,7 +28,7 @@ Rectangle {
 
     ServiceFeatureTable {
         id: censusTable
-        url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/3"
+        url: "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/Counties_Obesity_Inactivity_Diabetes_2013/FeatureServer/0"
 
         Component.onCompleted: load();
 
@@ -36,8 +36,8 @@ Rectangle {
             if (loadStatus !== Enums.LoadStatusLoaded)
                 return;
 
-            var fieldModel = [];
-            for (var i = 0; i < fields.length; i++) {
+            const fieldModel = [];
+            for (let i = 0; i < fields.length; i++) {
                 fieldModel.push(fields[i].name);
             }
             statisticOptionsPage.fields = fieldModel;
@@ -61,14 +61,14 @@ Rectangle {
             }
 
             // iterate the results and add to a model
-            var iter = queryStatisticsResult.iterator;
+            const iter = queryStatisticsResult.iterator;
             while (iter.hasNext) {
-                var record = iter.next();
-                var sectionString = JSON.stringify(record.group).replace("{","").replace("}","");
+                const record = iter.next();
+                const sectionString = JSON.stringify(record.group).replace("{","").replace("}","");
 
-                for (var statKey in record.statistics) {
+                for (let statKey in record.statistics) {
                     if (record.statistics.hasOwnProperty(statKey)) {
-                        var result = {
+                        const result = {
                             "section" : sectionString,
                             "statistic" : statKey + ": " + record.statistics[statKey]
                         };
@@ -90,16 +90,16 @@ Rectangle {
             height: parent.height
             onStatisticButtonClicked: {
                 // create the parameter object
-                var params = ArcGISRuntimeEnvironment.createObject("StatisticsQueryParameters");
+                const params = ArcGISRuntimeEnvironment.createObject("StatisticsQueryParameters");
 
                 // add the statistic definition objects
-                var statisticDefinitions = [];
-                for (var i = 0; i < statisticsModel.count; i++) {
-                    var statistic = statisticsModel.get(i);
-                    var definition = ArcGISRuntimeEnvironment.createObject("StatisticDefinition", {
-                                                                               onFieldName: statistic.field,
-                                                                               statisticType: statisticStringToEnum(statistic.statistic)
-                                                                           });
+                const statisticDefinitions = [];
+                for (let i = 0; i < statisticsModel.count; i++) {
+                    const statistic = statisticsModel.get(i);
+                    const definition = ArcGISRuntimeEnvironment.createObject("StatisticDefinition", {
+                                                                                 onFieldName: statistic.field,
+                                                                                 statisticType: statisticStringToEnum(statistic.statistic)
+                                                                             });
                     statisticDefinitions.push(definition);
                 }
                 params.statisticDefinitions = statisticDefinitions;
@@ -108,16 +108,19 @@ Rectangle {
                 params.groupByFieldNames = groupingFields;
 
                 // add the order by objects
-                var orderBys = [];
-                for (var j = 0; j < orderByModel.count; j++) {
-                    var group = orderByModel.get(j);
-                    var orderBy = ArcGISRuntimeEnvironment.createObject("OrderBy", {
-                                                                            fieldName: group.field,
-                                                                            sortOrder: orderStringToEnum(group.order)
-                                                                        });
+                const orderBys = [];
+                for (let j = 0; j < orderByModel.count; j++) {
+                    const group = orderByModel.get(j);
+                    const orderBy = ArcGISRuntimeEnvironment.createObject("OrderBy", {
+                                                                              fieldName: group.field,
+                                                                              sortOrder: orderStringToEnum(group.order)
+                                                                          });
                     orderBys.push(orderBy);
                 }
                 params.orderByFields = orderBys;
+
+                // ignore counties with missing data
+                params.whereClause = "\"State\" IS NOT NULL";
 
                 // execute the query
                 censusTable.queryStatistics(params);

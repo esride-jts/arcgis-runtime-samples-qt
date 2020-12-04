@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "LocalServerFeatureLayer.h"
 
 #include "Basemap.h"
@@ -79,7 +83,6 @@ void LocalServerFeatureLayer::connectSignals()
     if (LocalServer::status() == LocalServerStatus::Started)
     {
       qDebug() << "Local server started";
-      m_localFeatureService->start();
     }
   });
 
@@ -88,6 +91,7 @@ void LocalServerFeatureLayer::connectSignals()
   {
     if (m_localFeatureService->status() == LocalServerStatus::Started)
     {
+      // create the feature layer
       ServiceFeatureTable* svt = new ServiceFeatureTable(QUrl(m_localFeatureService->url().toString() + "/0"), this);
       FeatureLayer* featureLayer = new FeatureLayer(svt, this);
       connect(featureLayer, &FeatureLayer::loadStatusChanged, this, [this, featureLayer](LoadStatus status)

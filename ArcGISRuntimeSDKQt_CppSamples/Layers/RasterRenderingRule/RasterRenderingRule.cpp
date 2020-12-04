@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "RasterRenderingRule.h"
 
 #include "Map.h"
@@ -25,7 +29,6 @@
 #include "RenderingRule.h"
 #include "RenderingRuleInfo.h"
 
-#include <QQmlProperty>
 #include <QJsonObject>
 #include <QJsonDocument>
 

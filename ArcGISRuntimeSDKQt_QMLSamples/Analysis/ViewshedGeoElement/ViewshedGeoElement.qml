@@ -15,7 +15,7 @@
 // [Legal]
 
 import QtQuick 2.6
-import Esri.ArcGISRuntime 100.5
+import Esri.ArcGISRuntime 100.9
 import Esri.ArcGISExtras 1.1
 
 Rectangle {
@@ -24,12 +24,12 @@ Rectangle {
     width: 800
     height: 600
 
-    property string dataPath: System.userHomePath + "/ArcGIS/Runtime/Data"
+    readonly property string dataPath: System.userHomePath + "/ArcGIS/Runtime/Data"
+    readonly property string headingAttr: "HEADING"
+    readonly property var linearUnit: Enums.LinearUnitIdMeters
+    readonly property var angularUnit: Enums.AngularUnitIdDegrees
+    readonly property var geodeticCurveType: Enums.GeodeticCurveTypeGeodesic
     property Point waypoint: null
-    property string headingAttr: "HEADING"
-    property var linearUnit: Enums.LinearUnitIdMeters
-    property var angularUnit: Enums.AngularUnitIdDegrees
-    property var geodeticCurveType: Enums.GeodeticCurveTypeGeodesic
 
     SceneView {
         id: sceneView
@@ -56,10 +56,10 @@ Rectangle {
                     return;
 
                 // Set the Camera Controller
-                var controller = ArcGISRuntimeEnvironment.createObject("OrbitGeoElementCameraController", {
-                                                                           targetGeoElement: tank, cameraDistance: 200,
-                                                                           cameraPitchOffset: 45
-                                                                       });
+                const controller = ArcGISRuntimeEnvironment.createObject("OrbitGeoElementCameraController", {
+                                                                             targetGeoElement: tank, cameraDistance: 200,
+                                                                             cameraPitchOffset: 45
+                                                                         });
                 sceneView.cameraController = controller;
             }
         }
@@ -86,7 +86,7 @@ Rectangle {
                     x: -4.508708007847015
                     y: 48.38823243446344
                     z: 0
-                    spatialReference: SpatialReference.createWgs84()
+                    spatialReference: Factory.SpatialReference.createWgs84()
                 }
 
                 ModelSceneSymbol {
@@ -133,15 +133,15 @@ Rectangle {
             return;
 
         // get current location and distance from waypoint
-        var location = tank.geometry;
-        var distance = GeometryEngine.distanceGeodetic(location, waypoint, linearUnit, angularUnit, geodeticCurveType);
+        let location = tank.geometry;
+        const distance = GeometryEngine.distanceGeodetic(location, waypoint, linearUnit, angularUnit, geodeticCurveType);
 
         // move toward waypoint based on speed and update orientation
         location = GeometryEngine.moveGeodetic([location], 1.0, linearUnit, distance.azimuth1, angularUnit, geodeticCurveType);
         tank.geometry = location[0];
 
         // update the heading
-        var heading = tank.attributes.attributeValue(headingAttr);
+        const heading = tank.attributes.attributeValue(headingAttr);
         tank.attributes.replaceAttribute(headingAttr, heading + (distance.azimuth1 - heading) / 10);
 
         // reached waypoint

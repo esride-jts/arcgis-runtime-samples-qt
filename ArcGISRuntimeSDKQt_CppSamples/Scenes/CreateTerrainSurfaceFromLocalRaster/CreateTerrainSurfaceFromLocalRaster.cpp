@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "CreateTerrainSurfaceFromLocalRaster.h"
 
 #include "RasterElevationSource.h"
@@ -30,7 +34,8 @@
 using namespace Esri::ArcGISRuntime;
 
 // helper method to get cross platform data path
-namespace {
+namespace
+{
   QString defaultDataPath()
   {
     QString dataPath;

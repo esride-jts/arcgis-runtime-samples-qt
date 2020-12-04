@@ -1,0 +1,26 @@
+{
+    "category": "Scenes",
+    "description": "View a point scene layer from a scene service.",
+    "ignore": false,
+    "images": [
+        "screenshot.png"
+    ],
+    "keywords": [
+        "3D",
+        "layers",
+        "point scene layer",
+        "ArcGISSceneLayer"
+    ],
+    "redirect_from": [
+        ""
+    ],
+    "relevant_apis": [
+        "ArcGISSceneLayer"
+    ],
+    "snippets": [
+        "AddAPointSceneLayer.qml",
+        "AddAPointSceneLayer.cpp",
+        "AddAPointSceneLayer.h"
+    ],
+    "title": "Add a point scene layer"
+}

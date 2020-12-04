@@ -17,7 +17,6 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
 import Qt.labs.calendar 1.0
-import QtQuick.Window 2.2
 import QtGraphicalEffects 1.0
 import QtQuick.Layouts 1.3
 import Esri.Samples 1.0
@@ -27,7 +26,6 @@ AnalyzeHotspotsSample {
     clip: true
     width: 800
     height: 600
-
     
     property date fromThisDate : Date.fromLocaleDateString(Qt.locale(), "98/01/01", "yy/MM/dd")
     property date toThisDate : Date.fromLocaleDateString(Qt.locale(), "98/01/31", "yy/MM/dd")
@@ -81,6 +79,7 @@ AnalyzeHotspotsSample {
             id: fromDate
             width: parent.width
             text: fromThisDate.toLocaleString(Qt.locale(), "d MMM yyyy")
+            selectByMouse: true
 
             Image {
                 anchors {
@@ -112,6 +111,7 @@ AnalyzeHotspotsSample {
             id: toDate
             width: parent.width
             text: toThisDate.toLocaleString(Qt.locale(), "d MMM yyyy")
+            selectByMouse: true
 
             Image {
                 anchors {
@@ -141,8 +141,8 @@ AnalyzeHotspotsSample {
             enabled: !jobInProgress && validateDates(fromThisDate, toThisDate)
 
             onClicked: {
-                var fromString = fromThisDate.toLocaleString(Qt.locale(), "yyyy-MM-dd");
-                var toString = toThisDate.toLocaleString(Qt.locale(), "yyyy-MM-dd");
+                const fromString = fromThisDate.toLocaleString(Qt.locale(), "yyyy-MM-dd");
+                const toString = toThisDate.toLocaleString(Qt.locale(), "yyyy-MM-dd");
                 // Run the task
                 executeTaskWithDates(fromString, toString);
             }
@@ -232,20 +232,12 @@ AnalyzeHotspotsSample {
                 Layout.fillWidth: true
             }
 
-            WeekNumberColumn {
-                month: calendar.month
-                year: calendar.year
-                locale: calendar.locale
-
-                Layout.fillHeight: true
-                Layout.column: 0
-                Layout.row: 2
-            }
-
             MonthGrid {
                 id: calendar
                 month: Calendar.January
                 year: 1998
+                Layout.row: 2
+                Layout.column: 1
                 Layout.fillWidth: true
                 Layout.fillHeight: true
 
@@ -311,7 +303,7 @@ AnalyzeHotspotsSample {
         }
 
         // check that there is at least one day in between the from and to date
-        var oneDayMilliseconds = 86400000;
+        const oneDayMilliseconds = 86400000;
         if ((_toDate - _fromDate) < oneDayMilliseconds) {
             return false;
         }

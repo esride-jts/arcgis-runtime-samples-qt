@@ -16,15 +16,15 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-import Esri.ArcGISRuntime 100.5
+import Esri.ArcGISRuntime 100.9
 
 Rectangle {
     width: 800
     height: 600
 
-    property double pointX: 44.975
-    property double pointY: 34
-    property double pointZ: 500
+    readonly property double pointX: 44.975
+    readonly property double pointY: 34
+    readonly property double pointZ: 500
 
     // Create a scene view
     SceneView {
@@ -106,32 +106,32 @@ Rectangle {
 
     // function to dynamically create the graphics and add them to the graphics overlay
     function addSymbols() {
-        for (var i = 0; i < symbolModel.count; i++) {
-            var elem = symbolModel.get(i);
+        for (let i = 0; i < symbolModel.count; i++) {
+            const elem = symbolModel.get(i);
 
             // create a simple marker scene symbol
-            var smss = ArcGISRuntimeEnvironment.createObject("SimpleMarkerSceneSymbol", {
-                                                                 style: elem.symbolStyle,
-                                                                 color: elem.color,
-                                                                 width: 200,
-                                                                 height: 200,
-                                                                 depth: 200,
-                                                                 anchorPosition: Enums.SceneSymbolAnchorPositionCenter
-                                                             });
+            const smss = ArcGISRuntimeEnvironment.createObject("SimpleMarkerSceneSymbol", {
+                                                                   style: elem.symbolStyle,
+                                                                   color: elem.color,
+                                                                   width: 200,
+                                                                   height: 200,
+                                                                   depth: 200,
+                                                                   anchorPosition: Enums.SceneSymbolAnchorPositionCenter
+                                                               });
 
             // create a new point geometry
-            var point = ArcGISRuntimeEnvironment.createObject("Point", {
-                                                                  x: pointX + 0.01 * i,
-                                                                  y: pointY,
-                                                                  z: pointZ,
-                                                                  spatialReference: SpatialReference.createWgs84()
-                                                              });
+            const point = ArcGISRuntimeEnvironment.createObject("Point", {
+                                                                    x: pointX + 0.01 * i,
+                                                                    y: pointY,
+                                                                    z: pointZ,
+                                                                    spatialReference: Factory.SpatialReference.createWgs84()
+                                                                });
 
             // create a graphic using the point and the symbol
-            var graphic = ArcGISRuntimeEnvironment.createObject("Graphic", {
-                                                                    geometry: point,
-                                                                    symbol: smss
-                                                                });
+            const graphic = ArcGISRuntimeEnvironment.createObject("Graphic", {
+                                                                      geometry: point,
+                                                                      symbol: smss
+                                                                  });
 
             // add the graphic to the graphics overlay
             graphicsOverlay.graphics.append(graphic);

@@ -19,14 +19,15 @@ mac {
 
 #-------------------------------------------------------------------------------
 
-CONFIG += c++11
+CONFIG += c++14
 
-QT += opengl qml quick positioning sensors
+# additional modules are pulled in via arcgisruntime.pri
+QT += opengl qml quick
 
 TEMPLATE = app
 TARGET = RasterFunctionFile
 
-ARCGIS_RUNTIME_VERSION = 100.5
+ARCGIS_RUNTIME_VERSION = 100.9
 include($$PWD/arcgisruntime.pri)
 
 #-------------------------------------------------------------------------------

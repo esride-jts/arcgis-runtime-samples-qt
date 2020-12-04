@@ -16,7 +16,7 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-import Esri.ArcGISRuntime 100.5
+import Esri.ArcGISRuntime 100.9
 
 Rectangle {
     id: rootRectangle
@@ -64,7 +64,7 @@ Rectangle {
                     countiesTable = mapImageSublayers.get(3).table;
 
                     // connect to city sublayer query signal
-                    citiesTable.queryFeaturesStatusChanged.connect(function() {
+                    citiesTable.queryFeaturesStatusChanged.connect(()=> {
                         if (citiesTable.queryFeaturesStatus !== Enums.TaskStatusCompleted)
                             return;
 
@@ -72,22 +72,22 @@ Rectangle {
                         addResultsAsGraphics(citiesTable.queryFeaturesResult, citySymbol);
                     });
 
-                    // connect to state sublayer query signal
-                    statesTable.queryFeaturesStatusChanged.connect(function() {
-                        if (statesTable.queryFeaturesStatus !== Enums.TaskStatusCompleted)
-                            return;
-
-                        // add the results as graphics
-                        addResultsAsGraphics(statesTable.queryFeaturesResult, stateFillSymbol);
-                    });
-
                     // connect to county sublayer query signal
-                    countiesTable.queryFeaturesStatusChanged.connect(function() {
+                    countiesTable.queryFeaturesStatusChanged.connect(()=> {
                         if (countiesTable.queryFeaturesStatus !== Enums.TaskStatusCompleted)
                             return;
 
                         // add the results as graphics
                         addResultsAsGraphics(countiesTable.queryFeaturesResult, countyFillSymbol);
+                    });
+
+                    // connect to state sublayer query signal
+                    statesTable.queryFeaturesStatusChanged.connect(()=> {
+                        if (statesTable.queryFeaturesStatus !== Enums.TaskStatusCompleted)
+                            return;
+
+                        // add the results as graphics
+                        addResultsAsGraphics(statesTable.queryFeaturesResult, stateFillSymbol);
                     });
                 }
             }
@@ -111,16 +111,15 @@ Rectangle {
 
     function addResultsAsGraphics(results, symbol) {
         // get the iterator of features
-        var iter = results.iterator;
+        const iter = results.iterator;
         // add a graphic for each feature in the result
         while (iter.hasNext) {
-            var feat = iter.next();
-            var graphic = ArcGISRuntimeEnvironment.createObject("Graphic",
-                                                                    {
-                                                                        geometry: feat.geometry,
-                                                                        symbol: symbol
-                                                                    }
-                                                                );
+            const feat = iter.next();
+            const graphic = ArcGISRuntimeEnvironment.createObject("Graphic",
+                                                                  {
+                                                                      geometry: feat.geometry,
+                                                                      symbol: symbol
+                                                                  });
             selectedFeaturesOverlay.graphics.append(graphic);
         }
     }
@@ -160,6 +159,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 100
                 text: "1100000"
+                selectByMouse: true
                 validator: IntValidator{}
             }
         }
@@ -174,16 +174,16 @@ Rectangle {
                 selectedFeaturesOverlay.graphics.clear();
 
                 // create the parameters
-                var queryParams = ArcGISRuntimeEnvironment.createObject("QueryParameters",
-                                                                        {
-                                                                            whereClause: fieldText.text + populationText.text,
-                                                                            geometry: mapView.currentViewpointExtent.extent
-                                                                        });
+                const queryParams = ArcGISRuntimeEnvironment.createObject("QueryParameters",
+                                                                          {
+                                                                              whereClause: fieldText.text + populationText.text,
+                                                                              geometry: mapView.currentViewpointExtent.extent
+                                                                          });
 
                 // query the feature tables
                 citiesTable.queryFeatures(queryParams);
-                statesTable.queryFeatures(queryParams);
                 countiesTable.queryFeatures(queryParams);
+                statesTable.queryFeatures(queryParams);
             }
         }
     }

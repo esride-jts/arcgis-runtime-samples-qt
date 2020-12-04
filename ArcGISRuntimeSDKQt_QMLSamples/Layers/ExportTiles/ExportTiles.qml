@@ -17,19 +17,17 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
 import QtGraphicalEffects 1.0
-import Esri.ArcGISRuntime 100.5
+import Esri.ArcGISRuntime 100.9
 import Esri.ArcGISExtras 1.1
 
 Rectangle {
     width: 800
     height: 600
-
     
+    readonly property url outputTileCache: System.temporaryFolder.url + "/TileCacheQml_%1.tpk".arg(new Date().getTime().toString())
+    readonly property string tiledServiceUrl: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer"
     property Envelope tileCacheExtent: null
-    property url outputTileCache: System.temporaryFolder.url + "/TileCacheQml_%1.tpk".arg(new Date().getTime().toString())
     property string statusText: ""
-    property string tiledServiceUrl: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer"
-
     property ExportTileCacheParameters params
 
     // Create MapView that contains a Map
@@ -130,17 +128,17 @@ Rectangle {
 
         function displayOutputTileCache(tileCache) {
             // create a new tiled layer from the output tile cache
-            var tiledLayer = ArcGISRuntimeEnvironment.createObject("ArcGISTiledLayer", { tileCache: tileCache } );
+            const tiledLayer = ArcGISRuntimeEnvironment.createObject("ArcGISTiledLayer", { tileCache: tileCache } );
 
             // create a new basemap with the tiled layer
-            var basemap = ArcGISRuntimeEnvironment.createObject("Basemap");
+            const basemap = ArcGISRuntimeEnvironment.createObject("Basemap");
             basemap.baseLayers.append(tiledLayer);
 
             // set the new basemap on the map
             map.basemap = basemap;
 
             // zoom to the new layer and hide window once loaded
-            tiledLayer.loadStatusChanged.connect(function() {
+            tiledLayer.loadStatusChanged.connect(()=> {
                 if (tiledLayer.loadStatus === Enums.LoadStatusLoaded) {
                     extentRectangle.visible = false;
                     downloadButton.visible = false;
@@ -150,7 +148,9 @@ Rectangle {
         }
 
         Component.onDestruction: {
-            exportJob.jobStatusChanged.disconnect(updateJobStatus);
+            if (exportJob) {
+                exportJob.jobStatusChanged.disconnect(updateJobStatus);
+            }
         }
     }
     //! [ExportTiles ExportTileCacheTask]
@@ -211,11 +211,11 @@ Rectangle {
             }
 
             function getRectangleEnvelope() {
-                var corner1 = mapView.screenToLocation(extentRectangle.x, extentRectangle.y);
-                var corner2 = mapView.screenToLocation((extentRectangle.x + extentRectangle.width), (extentRectangle.y + extentRectangle.height));
-                var envBuilder = ArcGISRuntimeEnvironment.createObject("EnvelopeBuilder");
+                const corner1 = mapView.screenToLocation(extentRectangle.x, extentRectangle.y);
+                const corner2 = mapView.screenToLocation((extentRectangle.x + extentRectangle.width), (extentRectangle.y + extentRectangle.height));
+                const envBuilder = ArcGISRuntimeEnvironment.createObject("EnvelopeBuilder");
                 envBuilder.setCorners(corner1, corner2);
-                tileCacheExtent = GeometryEngine.project(envBuilder.geometry, SpatialReference.createWebMercator());
+                tileCacheExtent = GeometryEngine.project(envBuilder.geometry, Factory.SpatialReference.createWebMercator());
                 exportTask.generateDefaultParameters();
             }
         }

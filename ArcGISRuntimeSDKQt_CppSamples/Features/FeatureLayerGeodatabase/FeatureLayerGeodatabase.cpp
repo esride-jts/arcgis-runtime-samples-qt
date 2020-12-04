@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "FeatureLayerGeodatabase.h"
 
 #include "Map.h"
@@ -26,13 +30,39 @@
 #include "SpatialReference.h"
 #include "Point.h"
 #include "Viewpoint.h"
-#include <QQmlProperty>
+
+#include <QDir>
+#include <QtCore/qglobal.h>
 #include <QUrl>
+
+#ifdef Q_OS_IOS
+#include <QStandardPaths>
+#endif // Q_OS_IOS
 
 using namespace Esri::ArcGISRuntime;
 
+// helper method to get cross platform data path
+namespace
+{
+  QString defaultDataPath()
+  {
+    QString dataPath;
+
+  #ifdef Q_OS_ANDROID
+    dataPath = "/sdcard";
+  #elif defined Q_OS_IOS
+    dataPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+  #else
+    dataPath = QDir::homePath();
+  #endif
+
+    return dataPath;
+  }
+} // namespace
+
 FeatureLayerGeodatabase::FeatureLayerGeodatabase(QQuickItem* parent) :
-  QQuickItem(parent)
+  QQuickItem(parent),
+  m_dataPath(defaultDataPath() + "/ArcGIS/Runtime/Data/")
 {
 }
 
@@ -68,9 +98,6 @@ void FeatureLayerGeodatabase::componentComplete()
   // find QML MapView component
   m_mapView = findChild<MapQuickView*>("mapView");
   m_mapView->setWrapAroundMode(WrapAroundMode::Disabled);
-
-  // get the data path
-  m_dataPath = QQmlProperty::read(m_mapView, "dataPath").toUrl().toLocalFile();
 
   //! [FeatureLayer Geodatabase add basemap]
   // Create a map using a local vector tile package

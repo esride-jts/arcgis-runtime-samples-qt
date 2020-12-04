@@ -38,6 +38,8 @@ public:
 
   void componentComplete() override;
   static void init();
+  Q_INVOKABLE void changeDrapedVisibility();
+  Q_INVOKABLE void changeZValue(double zValue);
 
 private:
   void addGraphics();
@@ -45,8 +47,10 @@ private:
 
 private:
   Esri::ArcGISRuntime::SceneQuickView* m_sceneView = nullptr;
-  Esri::ArcGISRuntime::GraphicsOverlay* m_drapedOverlay = nullptr;
+  Esri::ArcGISRuntime::GraphicsOverlay* m_drapedFlatOverlay = nullptr;
+  Esri::ArcGISRuntime::GraphicsOverlay* m_drapedBillboardedOverlay = nullptr;
   Esri::ArcGISRuntime::GraphicsOverlay* m_relativeOverlay = nullptr;
+  Esri::ArcGISRuntime::GraphicsOverlay* m_relativeToSceneOverlay = nullptr;
   Esri::ArcGISRuntime::GraphicsOverlay* m_absoluteOverlay = nullptr;
 };
 

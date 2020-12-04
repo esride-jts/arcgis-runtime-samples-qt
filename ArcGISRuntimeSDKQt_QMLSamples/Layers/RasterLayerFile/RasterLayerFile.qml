@@ -16,17 +16,16 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-import Esri.ArcGISRuntime 100.5
+import Esri.ArcGISRuntime 100.9
 import Esri.ArcGISExtras 1.1
 
 Rectangle {
     id: rootRectangle
     clip: true
     anchors.fill: parent
-
     
-    property url dataPath: System.userHomePath + "/ArcGIS/Runtime/Data/raster/"
-    property var supportedFormats: ["img","I12","dt0","dt1","dt2","tc2","geotiff","tif", "tiff", "hr1","jpg","jpeg","jp2","ntf","png","i21","ovr"]
+    readonly property url dataPath: System.userHomePath + "/ArcGIS/Runtime/Data/raster/"
+    readonly property var supportedFormats: ["img","I12","dt0","dt1","dt2","tc2","geotiff","tif", "tiff", "hr1","jpg","jpeg","jp2","ntf","png","i21","ovr"]
     property var rasterLayer: null
 
     MapView {
@@ -92,7 +91,7 @@ Rectangle {
     }
 
     function createAndAddRasterLayer(rasterUrl) {
-        var newRaster = ArcGISRuntimeEnvironment.createObject("Raster", {path: rasterUrl});
+        const newRaster = ArcGISRuntimeEnvironment.createObject("Raster", {path: rasterUrl});
         rasterLayer = ArcGISRuntimeEnvironment.createObject("RasterLayer", {raster: newRaster});
 
         rasterLayer.loadStatusChanged.connect(zoomToRaster);

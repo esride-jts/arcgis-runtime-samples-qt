@@ -17,8 +17,8 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
 import QtPositioning 5.6
-import Esri.ArcGISRuntime 100.5
-import Esri.ArcGISRuntime.Toolkit.Controls 100.5
+import Esri.ArcGISRuntime 100.9
+import Esri.ArcGISRuntime.Toolkit.Controls 100.9
 
 Rectangle {
     id: rootRectangle
@@ -42,14 +42,6 @@ Rectangle {
                     return;
 
                 mapView.locationDisplay.start();
-            }
-        }
-
-        // declare the location display and set the PositionSource
-        locationDisplay {
-            autoPanMode: Enums.LocationDisplayAutoPanModeRecenter
-            positionSource: PositionSource {
-                active: true
             }
         }
 
@@ -138,7 +130,7 @@ Rectangle {
                     if (!geocodeResults.length > 0)
                         return;
 
-                    var topLocation = geocodeResults[0];
+                    const topLocation = geocodeResults[0];
                     geocodePOIs(poiTextField.text, topLocation.displayLocation);
                     return;
                 }
@@ -146,9 +138,9 @@ Rectangle {
                 // create graphics for each geocode result
                 if (geocodeResults.length > 0) {
                     graphicsOverlay.graphics.clear();
-                    var bbox;
-                    for (var i = 0; i < geocodeResults.length; i++) {
-                        var graphic = ArcGISRuntimeEnvironment.createObject("Graphic");
+                    let bbox;
+                    for (let i = 0; i < geocodeResults.length; i++) {
+                        const graphic = ArcGISRuntimeEnvironment.createObject("Graphic");
                         graphic.geometry = geocodeResults[i].displayLocation;
                         graphic.attributes.attributesJson = geocodeResults[i].attributes;
                         graphicsOverlay.graphics.append(graphic);
@@ -169,7 +161,16 @@ Rectangle {
         }
     }
 
+    Rectangle {
+        anchors {
+            fill: searchColumn
+            margins: -5
+        }
+        color: "white"
+    }
+
     Column {
+        id: searchColumn
         anchors {
             left: parent.left
             right: parent.right
@@ -251,7 +252,7 @@ Rectangle {
 
     function geocodePOIs(poi, location, extent) {
         // create base geocode parameters
-        var geocodeParams = ArcGISRuntimeEnvironment.createObject("GeocodeParameters");
+        const geocodeParams = ArcGISRuntimeEnvironment.createObject("GeocodeParameters");
         geocodeParams.resultAttributeNames = ["*"];
         geocodeParams.maxResults = 50;
         geocodeParams.minScore = 75.0;

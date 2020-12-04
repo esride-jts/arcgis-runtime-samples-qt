@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "OpenMobileMap_MapPackage.h"
 
 #include "Basemap.h"
@@ -21,17 +25,18 @@
 #include "MapQuickView.h"
 #include "MobileMapPackage.h"
 
-#include <QQmlProperty>
-#include <QtGlobal>
+#include <QDir>
+#include <QtCore/qglobal.h>
 
 #ifdef Q_OS_IOS
 #include <QStandardPaths>
-#endif
+#endif // Q_OS_IOS
 
 using namespace Esri::ArcGISRuntime;
 
 // helper method to get cross platform data path
-namespace {
+namespace
+{
 QString defaultDataPath()
 {
   QString dataPath;
@@ -54,45 +59,7 @@ const QString sampleFileYellowstone {"/ArcGIS/Runtime/Data/mmpk/Yellowstone.mmpk
 
 OpenMobileMap_MapPackage::OpenMobileMap_MapPackage(QQuickItem* parent) :
   QQuickItem(parent)
-{
-  // create the MMPK data path
-  // data is downloaded automatically by the sample viewer app. Instructions to download
-  // separately are specified in the readme.
-  const QString dataPath = defaultDataPath() + sampleFileYellowstone;
-
-  // connect to the Mobile Map Package instance to determine if direct read is supported. Packages
-  // that contain raster data cannot be read directly and must be unpacked first.
-  connect(MobileMapPackage::instance(), &MobileMapPackage::isDirectReadSupportedCompleted,
-          this, [this, dataPath](QUuid, bool supported)
-  {
-    // if direct read is supported, load the package
-    if (supported)
-    {
-      createMapPackage(dataPath);
-    }
-    // otherwise, the package needs to be unpacked
-    else
-    {
-      MobileMapPackage::unpack(dataPath, m_unpackTempDir.path());
-    }
-  });
-
-  // connect to the Mobile Map Package instance to know when the data is unpacked
-  connect(MobileMapPackage::instance(), &MobileMapPackage::unpackCompleted,
-          this, [this](QUuid, bool success)
-  {
-    // if the unpack was successful, load the unpacked package
-    if (success)
-    {
-      createMapPackage(m_unpackTempDir.path());
-    }
-    // log that the upack failed
-    else
-    {
-      qDebug() << "failed to unpack";
-    }
-  });
-
+{    
   // connect to the Mobile Map Package instance to know when errors occur
   connect(MobileMapPackage::instance(), &MobileMapPackage::errorOccurred,
           [](Error e)
@@ -121,11 +88,13 @@ void OpenMobileMap_MapPackage::componentComplete()
   // find QML MapView component
   m_mapView = findChild<MapQuickView*>("mapView");
 
-  // get the data path
+  // create the MMPK data path
+  // data is downloaded automatically by the sample viewer app. Instructions to download
+  // separately are specified in the readme.
   const QString dataPath = defaultDataPath() + sampleFileYellowstone;
 
-  // Check if the MMPK can be read directly
-  MobileMapPackage::isDirectReadSupported(dataPath);
+  // Load the MMPK
+  createMapPackage(dataPath);
 }
 
 // create map package

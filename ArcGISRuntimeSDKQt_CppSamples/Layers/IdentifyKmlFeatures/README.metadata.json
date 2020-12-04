@@ -1,0 +1,38 @@
+{
+    "category": "Layers",
+    "description": "Show a callout with formatted content for a KML feature.",
+    "ignore": false,
+    "images": [
+        "screenshot.png"
+    ],
+    "keywords": [
+        "KML",
+        "KMZ",
+        "Keyhole",
+        "NOAA",
+        "NWS",
+        "OGC",
+        "weather",
+        "GeoView::identifyLayer(...)",
+        "IdentifyLayerResult",
+        "KmlLayer",
+        "KmlPlacemark",
+        "KmlPlacemark::balloonContent()"
+    ],
+    "redirect_from": [
+        ""
+    ],
+    "relevant_apis": [
+        "GeoView::identifyLayer(...)",
+        "IdentifyLayerResult",
+        "KmlLayer",
+        "KmlPlacemark",
+        "KmlPlacemark::balloonContent()"
+    ],
+    "snippets": [
+        "IdentifyKmlFeatures.qml",
+        "IdentifyKmlFeatures.cpp",
+        "IdentifyKmlFeatures.h"
+    ],
+    "title": "Identify KML features"
+}

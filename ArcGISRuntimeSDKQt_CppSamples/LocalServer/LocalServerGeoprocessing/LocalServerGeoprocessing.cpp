@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "LocalServerGeoprocessing.h"
 
 #include "Basemap.h"
@@ -32,6 +36,7 @@
 #include "ArcGISMapImageLayer.h"
 
 #include <QDir>
+#include <QTemporaryDir>
 
 using namespace Esri::ArcGISRuntime;
 
@@ -39,6 +44,15 @@ using namespace Esri::ArcGISRuntime;
 LocalServerGeoprocessing::LocalServerGeoprocessing(QQuickItem* parent) :
   QQuickItem(parent)
 {
+  // create temp/data path
+  const QString tempPath = LocalServerGeoprocessing::shortestTempPath() + "/EsriQtTemp";
+
+  // create the directory
+  m_tempDir = std::unique_ptr<QTemporaryDir>(new QTemporaryDir(tempPath));
+
+  // set the temp & app data path for the local server
+  LocalServer::instance()->setTempDataPath(m_tempDir->path());
+  LocalServer::instance()->setAppDataPath(m_tempDir->path());
 }
 
 // destructor
@@ -99,6 +113,7 @@ void LocalServerGeoprocessing::connectSignals()
   {
     if (LocalServer::status() == LocalServerStatus::Started)
     {
+      // start the service
       m_localGPService->start();
       m_isReady = false;
       emit isReadyChanged();
@@ -147,4 +162,17 @@ void LocalServerGeoprocessing::clearResults()
 {
   if (m_mapView->map()->operationalLayers()->size() > 1)
     m_mapView->map()->operationalLayers()->removeAt(1);
+}
+
+QString LocalServerGeoprocessing::shortestTempPath()
+{
+  // get tmp and home paths
+  const QString tmpPath = QDir::tempPath();
+  const QString homePath = QDir::homePath();
+
+  // return whichever is shorter, temp or home path
+  if (homePath.length() > tmpPath.length())
+    return tmpPath;
+  else
+    return homePath;
 }

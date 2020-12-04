@@ -1,0 +1,37 @@
+{
+    "category": "Search",
+    "description": "Use an online service to find the address for a tapped point.",
+    "ignore": false,
+    "images": [
+        "screenshot.png"
+    ],
+    "keywords": [
+        "callout",
+        "address",
+        "geocode",
+        "locate",
+        "reverse geocode",
+        "search",
+        "GeocodeParameters",
+        "LocatorTask",
+        "ReverseGeocodeParameters"
+    ],
+    "redirect_from": [
+        ""
+    ],
+    "relevant_apis": [
+        "GeocodeParameters",
+        "Callout",
+        "CalloutData",
+        "GraphicsOverlay",
+        "LocatorTask",
+        "PictureMarkerSymbol",
+        "ReverseGeocodeParameters"
+    ],
+    "snippets": [
+        "ReverseGeocodeOnline.qml",
+        "ReverseGeocodeOnline.cpp",
+        "ReverseGeocodeOnline.h"
+    ],
+    "title": "Reverse geocode"
+}

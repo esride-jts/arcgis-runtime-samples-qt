@@ -16,7 +16,7 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-import Esri.ArcGISRuntime 100.5
+import Esri.ArcGISRuntime 100.9
 import Esri.ArcGISExtras 1.1
 import Qt.labs.platform 1.0
 
@@ -26,7 +26,7 @@ Rectangle {
     width: 800
     height: 600
 
-    property url dataPath: System.userHomePath + "/ArcGIS/Runtime/Data/3D/dolmus_3ds/dolmus.3ds";
+    readonly property url dataPath: System.userHomePath + "/ArcGIS/Runtime/Data/3D/dolmus_3ds/dolmus.3ds";
     property int waypointIndex: 0
 
     // Mutable point of where observer is going to be.
@@ -205,16 +205,16 @@ Rectangle {
 
     function animate() {
         // Get current goal waypoint and taxi location.
-        var waypoint = waypoints[waypointIndex];
-        var location = taxi.geometry;
+        const waypoint = waypoints[waypointIndex];
+        let location = taxi.geometry;
 
         // Discover the azimuth between these two points.
-        var distance = GeometryEngine.distanceGeodetic(
+        const distance = GeometryEngine.distanceGeodetic(
                     location, waypoint, metres, degrees,
                     Enums.GeodeticCurveTypeGeodesic);
 
         // Move the taxi location along 1 metre in the direction of the azimuth. Update the taxi.
-        var points = GeometryEngine.moveGeodetic(
+        const points = GeometryEngine.moveGeodetic(
                     [location], 1.0, metres, distance.azimuth1, degrees,
                     Enums.GeodeticCurveTypeGeodesic);
 

@@ -17,13 +17,12 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import QtQuick.Window 2.2
 import Esri.Samples 1.0
 
 Item {
     clip: true
 
-    property int fontPixelSize: 14
+    readonly property int fontPixelSize: 14
     property string labelSuffix: ":  "
 
     FormatCoordinatesSample {
@@ -57,6 +56,7 @@ Item {
                 id: textDD
                 font.pixelSize: fontPixelSize
                 text: model.coordinatesInDD.length === 0 ? "invalid point" : model.coordinatesInDD
+                selectByMouse: true
                 Layout.fillWidth: true
                 Layout.margins: 5
                 onAccepted: {
@@ -75,6 +75,7 @@ Item {
             TextField {
                 id: textDMS
                 font.pixelSize: fontPixelSize
+                selectByMouse: true
                 Layout.margins: 5
                 text: model.coordinatesInDMS.length === 0 ? "invalid point" : model.coordinatesInDMS
                 Layout.fillWidth: true
@@ -95,6 +96,7 @@ Item {
                 id: textUtm
                 font.pixelSize: fontPixelSize
                 text: model.coordinatesInUtm.length === 0 ? "invalid point" : model.coordinatesInUtm
+                selectByMouse: true
                 Layout.fillWidth: true
                 Layout.margins: 5
                 onAccepted: {
@@ -114,6 +116,7 @@ Item {
                 id: textUsng
                 font.pixelSize: fontPixelSize
                 text: model.coordinatesInUsng.length === 0 ? "invalid point" : model.coordinatesInUsng
+                selectByMouse: true
                 Layout.fillWidth: true
                 Layout.margins: 5
                 onAccepted: {

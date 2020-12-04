@@ -17,39 +17,33 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import Esri.ArcGISRuntime 100.5
+import Esri.ArcGISRuntime 100.9
 import Esri.ArcGISExtras 1.1
 
 Rectangle {
     id: rootRectangle
     clip: true
-
     width: 800
     height: 600
 
-    
-
-    property double fontSize: 16
-    property var repeaterModel: ["Names", "Tags", "Symbol Classes", "Categories", "Keys"]
-    property var hintsModel: ["Fire", "Sustainment Points", "3", "Control Measure", "25212300_6"]
+    readonly property double fontSize: 16
+    readonly property var repeaterModel: ["Names", "Tags", "Symbol Classes", "Categories", "Keys"]
+    readonly property var hintsModel: ["Fire", "Sustainment Points", "3", "Control Measure", "25212300_6"]
+    readonly property url dataPath: System.userHomePath + "/ArcGIS/Runtime/Data/styles/arcade_style/mil2525d.stylx"
     property var searchParamList: [[],[],[],[],[]]
+    property DictionarySymbolStyle dictionarySymbolStyle: Factory.DictionarySymbolStyle.createFromFile(dataPath);
 
-    property url dataPath: System.userHomePath + "/ArcGIS/Runtime/Data/styles/mil2525d.stylx"
+    Connections {
+        target: dictionarySymbolStyle
 
-    DictionarySymbolStyle {
-        id: dictionarySymbolStyle
-        specificationType: "mil2525d"
-        styleLocation: dataPath
-
-        //Search completed
-        onSearchSymbolsStatusChanged:{
-            if (searchSymbolsStatus !== Enums.TaskStatusCompleted)
+        function onSearchSymbolsStatusChanged() {
+            if (dictionarySymbolStyle.searchSymbolsStatus !== Enums.TaskStatusCompleted)
                 return;
 
             resultView.visible = true;
 
             //Update the number of results retuned
-            resultText.text = "Result(s) found: " + searchSymbolsResult.count
+            resultText.text = "Result(s) found: " + dictionarySymbolStyle.searchSymbolsResult.count
         }
     }
 
@@ -66,11 +60,8 @@ Rectangle {
 
         Column {
             id: fieldColumn
-            anchors {
-                left: parent.left
-                right: parent.right
-                margins: 8
-            }
+            Layout.fillWidth: true
+            Layout.margins: 8
             visible: !hideSearch.checked
             enabled: visible
 
@@ -108,6 +99,7 @@ Rectangle {
                             id: categoryEntry
                             Layout.fillWidth: true
                             placeholderText: repeaterModel[index] +" (e.g. "+ hintsModel[index] +")"
+                            selectByMouse: true
                             validator: RegExpValidator{ regExp: /^\s*[\da-zA-Z_][\da-zA-Z\s_]*$/ }
                             onAccepted:  addCategoryButton.mouseArea.clicked();
                         }
@@ -131,7 +123,7 @@ Rectangle {
                                     if (categoryEntry.text.length === 0)
                                         return;
 
-                                    var tmp = searchParamList;
+                                    const tmp = searchParamList;
                                     tmp[index].push(categoryEntry.text);
 
                                     searchParamList = tmp
@@ -162,7 +154,7 @@ Rectangle {
                                 anchors.fill: parent
                                 onClicked: {
                                     categoryEntry.text = "";
-                                    var tmp = searchParamList;
+                                    const tmp = searchParamList;
                                     tmp[index] = [];
 
                                     searchParamList = tmp;
@@ -259,10 +251,7 @@ Rectangle {
         Rectangle {
             id: bottomRectangle
             Layout.fillHeight: true
-            anchors {
-                left: parent.left
-                right: parent.right
-            }
+            Layout.fillWidth: true
 
             //Listview of results returned from Dictionary
             ListView {

@@ -18,17 +18,15 @@ import QtQuick 2.6
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
-import QtQuick.Window 2.2
 import Esri.Samples 1.0
-import Esri.ArcGISRuntime.Toolkit.Controls 100.5
+import Esri.ArcGISRuntime.Toolkit.Controls 100.9
 
 UpdateAttributesFeatureServiceSample {
     id: updateFeaturesSample
     width: 800
     height: 600
-
     
-    property var featAttributes: ["Destroyed", "Major", "Minor", "Affected", "Inaccessible"]
+    readonly property var featAttributes: ["Destroyed", "Major", "Minor", "Affected", "Inaccessible"]
 
     // add a mapView component
     MapView {
@@ -40,7 +38,7 @@ UpdateAttributesFeatureServiceSample {
             id: callout
             borderWidth: 1;
             borderColor: "lightgrey"
-            calloutData: updateFeaturesSample.calloutData
+            calloutData: mapView.calloutData
             leaderPosition: leaderPositionEnum.Automatic
             onAccessoryButtonClicked: {
                 updateWindow.visible = true;
@@ -106,7 +104,7 @@ UpdateAttributesFeatureServiceSample {
                 id: damageComboBox
                 model: featAttributes
                 Component.onCompleted : {
-                    for (var i = 0; i < model.length; ++i) {
+                    for (let i = 0; i < model.length; ++i) {
                         metrics.text = model[i];
                         modelWidth = Math.max(modelWidth, metrics.width);
                     }

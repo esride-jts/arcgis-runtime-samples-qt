@@ -14,9 +14,11 @@
 // limitations under the License.
 // [Legal]
 
-#include "FeatureLayerDictionaryRenderer.h"
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
 
-#include <QQmlProperty>
+#include "FeatureLayerDictionaryRenderer.h"
 
 #include "DictionaryRenderer.h"
 #include "FeatureLayer.h"
@@ -27,10 +29,37 @@
 #include "MapQuickView.h"
 #include "DictionarySymbolStyle.h"
 
+#include <QDir>
+#include <QtCore/qglobal.h>
+
+#ifdef Q_OS_IOS
+#include <QStandardPaths>
+#endif // Q_OS_IOS
+
 using namespace Esri::ArcGISRuntime;
 
+// helper method to get cross platform data path
+namespace
+{
+  QString defaultDataPath()
+  {
+    QString dataPath;
+
+  #ifdef Q_OS_ANDROID
+    dataPath = "/sdcard";
+  #elif defined Q_OS_IOS
+    dataPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+  #else
+    dataPath = QDir::homePath();
+  #endif
+
+    return dataPath;
+  }
+} // namespace
+
 FeatureLayerDictionaryRenderer::FeatureLayerDictionaryRenderer(QQuickItem* parent) :
-  QQuickItem(parent)
+  QQuickItem(parent),
+  m_dataPath(defaultDataPath() + "/ArcGIS/Runtime/Data")
 { 
 }
 
@@ -44,9 +73,7 @@ void FeatureLayerDictionaryRenderer::init()
 
 void FeatureLayerDictionaryRenderer::componentComplete()
 {
-  QQuickItem::componentComplete();
-
-  m_dataPath = QQmlProperty::read(this, "dataPath").toUrl().toLocalFile();  
+  QQuickItem::componentComplete();  
 
   m_mapView = findChild<MapQuickView*>("mapView");
   // Create a map using the topo basemap
@@ -83,8 +110,8 @@ void FeatureLayerDictionaryRenderer::componentComplete()
 
       //! [Create Dictionary Symbol Style Cpp]
       const QString specType = QStringLiteral("mil2525d");
-      const QString stylePath = m_dataPath + "/styles/mil2525d.stylx";
-      DictionarySymbolStyle* dictionarySymbolStyle = new DictionarySymbolStyle(specType, stylePath, this);
+      const QString stylePath = m_dataPath + "/styles/arcade_style/mil2525d.stylx";
+      DictionarySymbolStyle* dictionarySymbolStyle = DictionarySymbolStyle::createFromFile(stylePath, this);
       //! [Create Dictionary Symbol Style Cpp]
 
       for (GeodatabaseFeatureTable* table : m_geodatabase->geodatabaseFeatureTables())

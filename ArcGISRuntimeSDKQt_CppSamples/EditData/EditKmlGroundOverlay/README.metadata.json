@@ -1,0 +1,40 @@
+{
+    "category": "Edit data",
+    "dataItems": [
+        {
+            "itemId": "1f3677c24b2c446e96eaf1099292e83e",
+            "path": "~/ArcGIS/Runtime/Data/raster/1944.jpg"
+        }
+    ],
+    "description": "Edit the values of a KML ground overlay.",
+    "ignore": false,
+    "images": [
+        "screenshot.png"
+    ],
+    "keywords": [
+        "KML",
+        "KMZ",
+        "OGC",
+        "imagery",
+        "keyhole",
+        "KmlDataset",
+        "KmlGroundOverlay",
+        "KmlIcon",
+        "KmlLayer"
+    ],
+    "redirect_from": [
+        ""
+    ],
+    "relevant_apis": [
+        "KmlDataset",
+        "KmlGroundOverlay",
+        "KmlIcon",
+        "KmlLayer"
+    ],
+    "snippets": [
+        "EditKmlGroundOverlay.qml",
+        "EditKmlGroundOverlay.cpp",
+        "EditKmlGroundOverlay.h"
+    ],
+    "title": "Edit KML ground overlay"
+}

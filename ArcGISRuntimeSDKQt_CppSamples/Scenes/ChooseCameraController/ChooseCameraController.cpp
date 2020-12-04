@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "ChooseCameraController.h"
 
 #include "ArcGISTiledElevationSource.h"
@@ -26,13 +30,12 @@
 #include "SimpleMarkerSceneSymbol.h"
 #include "SimpleRenderer.h"
 
-#include <QQmlProperty>
+#include <QDir>
+#include <QtCore/qglobal.h>
 
 #ifdef Q_OS_IOS
 #include <QStandardPaths>
-#else
-#include <QDir>
-#endif
+#endif // Q_OS_IOS
 
 namespace
 {

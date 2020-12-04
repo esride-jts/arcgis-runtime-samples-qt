@@ -16,7 +16,7 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-import Esri.ArcGISRuntime 100.5
+import Esri.ArcGISRuntime 100.9
 
 Rectangle {
     width: 800
@@ -37,6 +37,7 @@ Rectangle {
 
             FeatureLayer {
                 id: featureLayer
+                maxScale: 10000
 
                 // default property (renderer)
                 SimpleRenderer {
@@ -57,7 +58,7 @@ Rectangle {
                 // feature table
                 ServiceFeatureTable {
                     id: featureTable
-                    url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/2"
+                    url: "https://services.arcgis.com/jIL9msH9OI208GCb/arcgis/rest/services/USA_Daytime_Population_2016/FeatureServer/0"
 
                     onQueryFeaturesStatusChanged: {
                         if (queryFeaturesStatus === Enums.TaskStatusCompleted) {
@@ -69,7 +70,7 @@ Rectangle {
                             // clear any previous selection
                             featureLayer.clearSelection();
 
-                            var features = []
+                            const features = []
                             // get the features
                             while (queryFeaturesResult.iterator.hasNext) {
                                 features.push(queryFeaturesResult.iterator.next());
@@ -123,6 +124,7 @@ Rectangle {
                 width: parent.width * 0.25
                 placeholderText: "Enter a state name to select"
                 inputMethodHints: Qt.ImhNoPredictiveText
+                selectByMouse: true
                 validator: RegExpValidator{ regExp: /^[a-zA-Z ]*$/ }
                 Keys.onReturnPressed: {
                     query();
@@ -166,13 +168,11 @@ Rectangle {
         if (stateName === "")
             return "";
 
-        var formattedWords = [];
+        const formattedWords = [];
 
-        var lowerStateName = stateName.toLowerCase();
-        var words = lowerStateName.split(" ");
-        words.forEach(function(word) {
-            formattedWords.push(word.charAt(0).toUpperCase() + word.slice(1));
-        });
+        const lowerStateName = stateName.toLowerCase();
+        const words = lowerStateName.split(" ");
+        words.forEach(word => formattedWords.push(word.charAt(0).toUpperCase() + word.slice(1)));
 
         return formattedWords.join(" ");
     }

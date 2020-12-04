@@ -14,20 +14,24 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "Surface_Placement.h"
 
+#include "ArcGISSceneLayer.h"
 #include "ArcGISTiledElevationSource.h"
-#include "Scene.h"
-#include "SceneQuickView.h"
-#include "Viewpoint.h"
-#include "Point.h"
-#include "SpatialReference.h"
 #include "Camera.h"
 #include "Graphic.h"
 #include "GraphicsOverlay.h"
-#include "SimpleMarkerSymbol.h"
-#include "TextSymbol.h"
 #include "Point.h"
+#include "Scene.h"
+#include "SceneQuickView.h"
+#include "SimpleMarkerSymbol.h"
+#include "SpatialReference.h"
+#include "TextSymbol.h"
+#include "Viewpoint.h"
 
 using namespace Esri::ArcGISRuntime;
 
@@ -55,11 +59,16 @@ void Surface_Placement::componentComplete()
   Surface* surface = new Surface(this);
   surface->elevationSources()->append(new ArcGISTiledElevationSource(QUrl("https://elevation3d.arcgis.com/arcgis/rest/services/WorldElevation3D/Terrain3D/ImageServer"), this));
   scene->setBaseSurface(surface);
+
+  // Create scene layer from the Brest, France scene server.
+  ArcGISSceneLayer* sceneLayer = new ArcGISSceneLayer(QUrl("https://tiles.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/Buildings_Brest/SceneServer"), this);
+  scene->operationalLayers()->append(sceneLayer);
   //! [Create Scene API snippet]
 
   // set an initial viewpoint
-  Camera camera(53.04, -4.04, 1300, 0, 90, 0);
-  Viewpoint viewpoint(53.04, -4.04, 1300, camera);
+  const Point initialViewPoint(-4.45968, 48.3889, 37.9922);
+  const Camera camera(initialViewPoint, 329.91, 96.6632, 0);
+  const Viewpoint viewpoint(initialViewPoint, camera);
   scene->setInitialViewpoint(viewpoint);
 
   // set the scene to the scene view
@@ -74,15 +83,26 @@ void Surface_Placement::componentComplete()
 
 void Surface_Placement::addGraphicsOverlays()
 {
-  // Graphics overlay with draped surface placement
-  m_drapedOverlay = new GraphicsOverlay(this);
-  m_drapedOverlay->setSceneProperties(LayerSceneProperties(SurfacePlacement::Draped));
-  m_sceneView->graphicsOverlays()->append(m_drapedOverlay);
+  // Graphics overlay with draped billboarded surface placement
+  m_drapedBillboardedOverlay = new GraphicsOverlay(this);
+  m_drapedBillboardedOverlay->setSceneProperties(LayerSceneProperties(SurfacePlacement::DrapedBillboarded));
+  m_sceneView->graphicsOverlays()->append(m_drapedBillboardedOverlay);
+
+  // Graphics overlay with draped flat surface placement
+  m_drapedFlatOverlay = new GraphicsOverlay(this);
+  m_drapedFlatOverlay->setSceneProperties(LayerSceneProperties(SurfacePlacement::DrapedFlat));
+  m_drapedFlatOverlay->setVisible(false);
+  m_sceneView->graphicsOverlays()->append(m_drapedFlatOverlay);
 
   // Graphics overlay with relative surface placement
   m_relativeOverlay = new GraphicsOverlay(this);
   m_relativeOverlay->setSceneProperties(LayerSceneProperties(SurfacePlacement::Relative));
   m_sceneView->graphicsOverlays()->append(m_relativeOverlay);
+
+  // Graphics overlay with relative to scene surface placement
+  m_relativeToSceneOverlay = new GraphicsOverlay(this);
+  m_relativeToSceneOverlay->setSceneProperties(LayerSceneProperties(SurfacePlacement::RelativeToScene));
+  m_sceneView->graphicsOverlays()->append(m_relativeToSceneOverlay);
 
   // Graphics overlay with absolute surface placement
   m_absoluteOverlay = new GraphicsOverlay(this);
@@ -92,30 +112,65 @@ void Surface_Placement::addGraphicsOverlays()
 
 void Surface_Placement::addGraphics()
 {
-  // create point for the graphics with z value of 1000
-  Point point(-4.04, 53.06, 1000, SpatialReference::wgs84());
+  // create point for the scene related graphic with a z value of 70
+  const Point sceneRelatedPoint(-4.4610562, 48.3902727, 70, SpatialReference::wgs84());
+
+  // create point for the surface related graphics with z value of 70
+  const Point surfaceRelatedPoint(-4.4609257, 48.3903965 , 70, SpatialReference::wgs84());
 
   // create simple marker symbol
-  SimpleMarkerSymbol* simpleMarkerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbolStyle::Circle, QColor("red"), 20, this);
+  SimpleMarkerSymbol* simpleMarkerSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbolStyle::Triangle, QColor("red"), 20, this);
 
   // create text symbols
-  TextSymbol* drapedText = new TextSymbol("DRAPED", QColor("white"), 20, HorizontalAlignment::Left, VerticalAlignment::Middle, this);
-  drapedText->setOffsetX(20);
-  TextSymbol* relativeText = new TextSymbol("RELATIVE", QColor("white"), 20, HorizontalAlignment::Left, VerticalAlignment::Middle, this);
+  TextSymbol* drapedBillboardedText = new TextSymbol("DRAPED BILLBOARDED", QColor("blue"), 20, HorizontalAlignment::Left, VerticalAlignment::Middle, this);
+  drapedBillboardedText->setOffsetX(20);
+  TextSymbol* drapedFlatText = new TextSymbol("DRAPED FLAT", QColor("blue"), 20, HorizontalAlignment::Left, VerticalAlignment::Middle, this);
+  drapedFlatText->setOffsetX(20);
+  TextSymbol* relativeText = new TextSymbol("RELATIVE", QColor("blue"), 20, HorizontalAlignment::Left, VerticalAlignment::Middle, this);
   relativeText->setOffsetX(20);
-  TextSymbol* absoluteText = new TextSymbol("ABSOLUTE", QColor("white"), 20, HorizontalAlignment::Left, VerticalAlignment::Middle, this);
+  TextSymbol* relativeToSceneText = new TextSymbol("RELATIVE TO SCENE", QColor("blue"), 20, HorizontalAlignment::Right, VerticalAlignment::Middle, this);
+  relativeToSceneText->setOffsetX(-20);
+  TextSymbol* absoluteText = new TextSymbol("ABSOLUTE", QColor("blue"), 20, HorizontalAlignment::Left, VerticalAlignment::Middle, this);
   absoluteText->setOffsetX(20);
 
   // add graphics to each overlay
+  // Graphics will be draped on the surface of the scene and will always face the camera.
+  m_drapedBillboardedOverlay->graphics()->append(new Graphic(surfaceRelatedPoint, simpleMarkerSymbol));
+  m_drapedBillboardedOverlay->graphics()->append(new Graphic(surfaceRelatedPoint, drapedBillboardedText));
+
   // Graphics will be draped on the surface of the scene
-  m_drapedOverlay->graphics()->append(new Graphic(point, simpleMarkerSymbol));
-  m_drapedOverlay->graphics()->append(new Graphic(point, drapedText));
+  m_drapedFlatOverlay->graphics()->append(new Graphic(surfaceRelatedPoint, simpleMarkerSymbol));
+  m_drapedFlatOverlay->graphics()->append(new Graphic(surfaceRelatedPoint, drapedFlatText));
 
   // Graphics will be placed at z value relative to the surface
-  m_relativeOverlay->graphics()->append(new Graphic(point, simpleMarkerSymbol));
-  m_relativeOverlay->graphics()->append(new Graphic(point, relativeText));
+  m_relativeOverlay->graphics()->append(new Graphic(surfaceRelatedPoint, simpleMarkerSymbol));
+  m_relativeOverlay->graphics()->append(new Graphic(surfaceRelatedPoint, relativeText));
+
+  // Graphics will be placed at z value relative to the scene
+  m_relativeToSceneOverlay->graphics()->append(new Graphic(sceneRelatedPoint, simpleMarkerSymbol));
+  m_relativeToSceneOverlay->graphics()->append(new Graphic(sceneRelatedPoint, relativeToSceneText));
 
   // Graphics will be placed at absolute z value
-  m_absoluteOverlay->graphics()->append(new Graphic(point, simpleMarkerSymbol));
-  m_absoluteOverlay->graphics()->append(new Graphic(point, absoluteText));
+  m_absoluteOverlay->graphics()->append(new Graphic(surfaceRelatedPoint, simpleMarkerSymbol));
+  m_absoluteOverlay->graphics()->append(new Graphic(surfaceRelatedPoint, absoluteText));
+}
+
+void Surface_Placement::changeDrapedVisibility()
+{
+  m_drapedFlatOverlay->setVisible(!m_drapedFlatOverlay->isVisible());
+  m_drapedBillboardedOverlay->setVisible(!m_drapedBillboardedOverlay->isVisible());
+}
+
+void Surface_Placement::changeZValue(double zValue)
+{
+  for (GraphicsOverlay* overlay : *m_sceneView->graphicsOverlays())
+  {
+    for (Graphic* graphic : *overlay->graphics())
+    {
+      // create new graphic with the same existing information but a new Z-value
+      const Point graphicPoint{graphic->geometry()};
+      const Point point{graphicPoint.x(), graphicPoint.y(), zValue, graphicPoint.spatialReference()};
+      graphic->setGeometry(point);
+    }
+  }
 }

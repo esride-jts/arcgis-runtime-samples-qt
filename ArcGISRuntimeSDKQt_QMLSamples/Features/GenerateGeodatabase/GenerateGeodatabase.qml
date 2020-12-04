@@ -17,17 +17,16 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
 import QtGraphicalEffects 1.0
-import Esri.ArcGISRuntime 100.5
+import Esri.ArcGISRuntime 100.9
 import Esri.ArcGISExtras 1.1
 
 Rectangle {
     width: 800
     height: 600
-
     
-    property url dataPath: System.userHomePath + "/ArcGIS/Runtime/Data/"
-    property url outputGdb: System.temporaryFolder.url + "/WildfireQml_%1.geodatabase".arg(new Date().getTime().toString())
-    property string featureServiceUrl: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Sync/WildfireSync/FeatureServer"
+    readonly property url dataPath: System.userHomePath + "/ArcGIS/Runtime/Data/"
+    readonly property url outputGdb: System.temporaryFolder.url + "/WildfireQml_%1.geodatabase".arg(new Date().getTime().toString())
+    readonly property string featureServiceUrl: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Sync/WildfireSync/FeatureServer"
     property Envelope generateExtent: null
     property var generateLayerOptions: []
     property string statusText: ""
@@ -64,7 +63,7 @@ Rectangle {
                     xMin: -122.50017717584528
                     yMax: 37.81638388695054
                     yMin: 37.745000054347535
-                    spatialReference: SpatialReference.createWgs84()
+                    spatialReference: Factory.SpatialReference.createWgs84()
                 }
             }
         }
@@ -79,16 +78,16 @@ Rectangle {
 
         onLoadStatusChanged: {
             if (loadStatus === Enums.LoadStatusLoaded) {
-                var idInfos = featureServiceInfo.layerInfos;
-                for (var i = 0; i < idInfos.length; i++) {
+                const idInfos = featureServiceInfo.layerInfos;
+                for (let i = 0; i < idInfos.length; i++) {
                     // add the layer to the map
-                    var featureLayerUrl = featureServiceInfo.url + "/" + idInfos[i].infoId;
-                    var serviceFeatureTable = ArcGISRuntimeEnvironment.createObject("ServiceFeatureTable", {url: featureLayerUrl});
-                    var featureLayer = ArcGISRuntimeEnvironment.createObject("FeatureLayer", {featureTable: serviceFeatureTable});
+                    const featureLayerUrl = featureServiceInfo.url + "/" + idInfos[i].infoId;
+                    const serviceFeatureTable = ArcGISRuntimeEnvironment.createObject("ServiceFeatureTable", {url: featureLayerUrl});
+                    const featureLayer = ArcGISRuntimeEnvironment.createObject("FeatureLayer", {featureTable: serviceFeatureTable});
                     map.operationalLayers.append(featureLayer);
 
                     // add a new GenerateLayerOption to array for use in the GenerateGeodatabaseParameters
-                    var layerOption = ArcGISRuntimeEnvironment.createObject("GenerateLayerOption", {layerId: idInfos[i].infoId});
+                    const layerOption = ArcGISRuntimeEnvironment.createObject("GenerateLayerOption", {layerId: idInfos[i].infoId});
                     generateLayerOptions.push(layerOption);
                     generateParameters.layerOptions = generateLayerOptions;
                 }
@@ -148,12 +147,12 @@ Rectangle {
             map.operationalLayers.clear();
 
             // load the geodatabase to access the feature tables
-            geodatabase.loadStatusChanged.connect(function() {
+            geodatabase.loadStatusChanged.connect(()=> {
                 if (geodatabase.loadStatus === Enums.LoadStatusLoaded) {
                     // create a feature layer from each feature table, and add to the map
-                    for (var i = 0; i < geodatabase.geodatabaseFeatureTables.length; i++) {
-                        var featureTable = geodatabase.geodatabaseFeatureTables[i];
-                        var featureLayer = ArcGISRuntimeEnvironment.createObject("FeatureLayer");
+                    for (let i = 0; i < geodatabase.geodatabaseFeatureTables.length; i++) {
+                        const featureTable = geodatabase.geodatabaseFeatureTables[i];
+                        const featureLayer = ArcGISRuntimeEnvironment.createObject("FeatureLayer");
                         featureLayer.featureTable = featureTable;
                         map.operationalLayers.append(featureLayer);
                     }
@@ -170,7 +169,9 @@ Rectangle {
         }
 
         Component.onDestruction: {
-            generateJob.jobStatusChanged.disconnect(updateGenerateJobStatus);
+            if (generateJob) {
+                generateJob.jobStatusChanged.disconnect(updateGenerateJobStatus);
+            }
         }
     }
 
@@ -242,11 +243,11 @@ Rectangle {
             }
 
             function getRectangleEnvelope() {
-                var corner1 = mapView.screenToLocation(extentRectangle.x, extentRectangle.y);
-                var corner2 = mapView.screenToLocation((extentRectangle.x + extentRectangle.width), (extentRectangle.y + extentRectangle.height));
-                var envBuilder = ArcGISRuntimeEnvironment.createObject("EnvelopeBuilder");
+                const corner1 = mapView.screenToLocation(extentRectangle.x, extentRectangle.y);
+                const corner2 = mapView.screenToLocation((extentRectangle.x + extentRectangle.width), (extentRectangle.y + extentRectangle.height));
+                const envBuilder = ArcGISRuntimeEnvironment.createObject("EnvelopeBuilder");
                 envBuilder.setCorners(corner1, corner2);
-                generateExtent = GeometryEngine.project(envBuilder.geometry, SpatialReference.createWebMercator());
+                generateExtent = GeometryEngine.project(envBuilder.geometry, Factory.SpatialReference.createWebMercator());
             }
         }
     }

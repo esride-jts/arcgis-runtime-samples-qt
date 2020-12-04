@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "ViewPointCloudDataOffline.h"
 
 #include "ArcGISTiledElevationSource.h"
@@ -56,7 +60,8 @@ SceneQuickView* ViewPointCloudDataOffline::sceneView() const
 }
 
 // helper method to get cross platform data path
-namespace {
+namespace
+{
   QString defaultDataPath()
   {
     QString dataPath;

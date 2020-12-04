@@ -16,16 +16,13 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-import QtQuick.Window 2.2
 import Esri.Samples 1.0
 
 BufferSample {
     id: rootRectangle
     clip: true
     width: 800
-    height: 600
-
-    
+    height: 600    
 
     // add a mapView component
     MapView {
@@ -64,6 +61,7 @@ BufferSample {
             id: bufferSizeText
             validator: IntValidator { bottom: 1; top: 10000 }
             text: "1000"
+            selectByMouse: true
             onTextChanged: bufferSize = Number(text);
         }
 

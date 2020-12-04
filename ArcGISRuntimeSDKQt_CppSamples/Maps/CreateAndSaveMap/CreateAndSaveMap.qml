@@ -16,17 +16,14 @@
 
 import QtQuick 2.6
 import QtQuick.Controls 2.2
-import QtQuick.Window 2.2
 import Esri.Samples 1.0
-import Esri.ArcGISRuntime.Toolkit.Dialogs 100.5
+import Esri.ArcGISRuntime.Toolkit.Dialogs 100.9
 
 CreateAndSaveMapSample {
     id: rootRectangle
     clip: true
     width: 800
-    height: 600
-
-    
+    height: 600    
 
     onPortalLoaded: {
         stackView.push(options);
@@ -36,7 +33,7 @@ CreateAndSaveMapSample {
         if (stackView.currentItem === completionRect)
             return;
 
-        var url =  "https://www.arcgis.com/home/item.html?id=%1".arg(itemId);
+        const url =  "https://www.arcgis.com/home/item.html?id=%1".arg(itemId);
         stackView.push(completionRect,
                        { text: success ? 'Map saved successfully.<br>View in <a href="%1">ArcGIS Online</a>'.arg(url)
                                        : "An error occurred while saving the map. Details: %1".arg(error)
@@ -117,8 +114,8 @@ CreateAndSaveMapSample {
                     // We need a local ref to the stackView and layerWindow
                     // object as our object references will have been deleted
                     // once "clear" cleans up this object.
-                    var sv = stackView;
-                    var lWindow = layerWindow;
+                    const sv = stackView;
+                    const lWindow = layerWindow;
                     sv.clear();
                     sv.push(lWindow);
                 }

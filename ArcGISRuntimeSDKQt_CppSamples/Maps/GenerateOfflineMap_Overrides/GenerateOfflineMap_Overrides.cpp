@@ -14,6 +14,10 @@
 // limitations under the License.
 // [Legal]
 
+#ifdef PCH_BUILD
+#include "pch.hpp"
+#endif // PCH_BUILD
+
 #include "GenerateOfflineMap_Overrides.h"
 
 #include "AuthenticationManager.h"
@@ -304,10 +308,13 @@ void GenerateOfflineMap_Overrides::setClipWaterPipesAOI(bool clip)
   m_parameterOverrides->setGenerateGeodatabaseParameters(dictionary);
 }
 
-void GenerateOfflineMap_Overrides::takeMapOffline(const QString& dataPath)
+void GenerateOfflineMap_Overrides::takeMapOffline()
 {
   if (!overridesReady())
     return;
+
+  // create temp data path for offline mmpk
+  const QString dataPath = m_tempPath.path() + "/offlinemap_overrides.mmpk";
 
   // Take the map offline with the original paramaters and the customized overrides.
   GenerateOfflineMapJob* generateJob = m_offlineMapTask->generateOfflineMap(m_parameters, dataPath, m_parameterOverrides);

@@ -17,8 +17,8 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import Esri.ArcGISRuntime 100.5
-import Esri.ArcGISRuntime.Toolkit.Controls 100.5
+import Esri.ArcGISRuntime 100.9
+import Esri.ArcGISRuntime.Toolkit.Controls 100.9
 
 Rectangle {
     id: root
@@ -26,8 +26,7 @@ Rectangle {
     height: 600
     
     property string calloutText
-    property string calloutDetailText
-    property Point calloutLocation;
+    property Point calloutLocation
 
     // Create MapView that contains a Map with the Imagery with Labels Basemap
     MapView {
@@ -58,7 +57,6 @@ Rectangle {
                 if (identifyGraphicsOverlayResult.graphics.length > 0) {
                     // setup the attributes
                     calloutText = identifyGraphicsOverlayResult.graphics[0].attributes.attributeValue("Match_addr");
-                    calloutDetailText = identifyGraphicsOverlayResult.graphics[0].attributes.attributeValue("Place_addr");
 
                     // show the callout
                     callout.showCallout();
@@ -82,8 +80,7 @@ Rectangle {
 
         calloutData {
             location:  calloutLocation
-            title: calloutText
-            detail: calloutDetailText
+            title: calloutText            
         }
 
         // map callout window
@@ -109,7 +106,7 @@ Rectangle {
             if (geocodeStatus === Enums.TaskStatusCompleted) {
                 if (geocodeResults.length > 0) {
                     graphicsOverlay.graphics.clear();
-                    var graphic = ArcGISRuntimeEnvironment.createObject("Graphic");
+                    const graphic = ArcGISRuntimeEnvironment.createObject("Graphic");
                     graphic.geometry = geocodeResults[0].displayLocation;
                     graphic.attributes.attributesJson = geocodeResults[0].attributes;
                     graphicsOverlay.graphics.append(graphic);
@@ -152,6 +149,7 @@ Rectangle {
                     id: textField
                     font.pixelSize: 14
                     placeholderText: "Type in an address"
+                    selectByMouse: true
 
                     Keys.onEnterPressed: geocodeAddress();
                     Keys.onReturnPressed: geocodeAddress();
